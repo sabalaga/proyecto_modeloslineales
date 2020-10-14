@@ -1,0 +1,35 @@
+---
+title: "Pre-Entrega Proyecto Modelos Lineales"
+output: pdf_document
+---
+
+# 1. Descripción del problema
+
+La educación superior en Chile tiene una organización compleja y que ha sufrido múltiples reformas desde la década de los ochenta hasta la actualidad. Probablemente el cambio más importante sea la gratuidad, que se comenzó a implementar desde el 2016. 
+
+Una de las aristas desde la que se puede estudiar a las Instituciones de Educación Superior (IES) y el acceso a éstas son los aranceles asociados a estudiar. Las universidades chileneas cobran los aranceles que estiman convenientes por las carreras de pregrado y pueden usar cualquier criterio que les parezca. Cada institución fija, año tras año, y autónomamente el precio que debe pagar el estudiante (Salas & Gómez, 2013; Dooner & Mena, 2006). Según la OCDE, Chile se encuentra en la segunda categoría entre las naciones con mayores aranceles. Sin embargo, basándose en rankings internacionales, Chile no está en el mismo nivel que el resto de los países que pertenecen a esta categoría en cuanto a calidad de la educación impartida (Cancino, 2010). Existe una amplia variación de los aranceles entre las univerisdades y también dentro de cada una, en los precios de los distintos porgramas que ofrecen.
+
+La presente investigción busca indagar en qué factores -y en qué medida - inciden en los precios de los aranceles. Para esto se utiliza información sobre la matrícula de educación superior por estudiante. Esta información es de carácter público y se encuentra disponible la base de datos y el correspondiente esquema de registro a través del Centro de Estudios MINEDUC, en [este enlace](http://datos.mineduc.cl/dashboards/20195/descarga-bases-de-datos-matricula-en-educacion-superior/).
+
+La base de datos correspondiente al año 2019 contiene 1.268.504 registros y 48 variables que corresponden a los estudiantes que se matricularon en IES ese año. Sin embargo, como la unidad de análisis que interesa son los programas, al agrupar por esta variable se tiene que la base cuenta con información de 14.546 programas, donde cada uno tiene entre uno y 4.873 estudiantes.
+
+La principal variable de interés es el arancel anual de la carrera o programa (`VALOR_ARANCEL`).
+
+Algunas de las variables consideradas para el modelo son:
+
+* Clasificación según categoría de institución que distingue Universidades del Consejo de Rectores y Universidades Privadas que no son del CRUCH (`TIPO_INST_2`)
+* Región donde se ubica la sede en la cual se imparte la carrera (`REGIÓN_SEDE`)
+* Categorización área OECD de la carrera o programa (OECD_AREA)
+* Número de años por la que fue acreditada la institución (ACRE_INST_ANIO)
+* Jornada en que se imparte la carrera o programa (JORNADA)
+* Clasificación del nivel al que pertenecen los estudios de la carrera o programa: Carreras Técnicas, Carreras Profesionales, Postítulo, Magíster, Doctorado. (NIVEL_CARRERA_2)
+* Duración teórica o formal en semestres de la carrera o programa, desde el momento en que un estudiante ingresa al primer año de la carrera hasta que obtiene el título o grado terminal de la misma (DUR_TOTAL_CARRERA)
+
+# 2. Análisis descriptivo de los datos
+
+
+
+# 3. Proceso de selección del modelo
+
+
+
