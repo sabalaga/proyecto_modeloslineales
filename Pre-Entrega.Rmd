@@ -28,8 +28,70 @@ Algunas de las variables consideradas para el modelo son:
 # 2. Análisis descriptivo de los datos
 
 
+```{r, include = FALSE}
+library(tidyverse)
+#base <- read.csv("C:/matricula_2019.csv", sep = ";" )
+#saveRDS(base, "matricula_2019.rds")
+#zip(zipfile = 'matricula_2019Zip', files = 'matricula_2019.rds')
+base <- readRDS("matricula_2019.rds")
+```
+```{r}
+# Estadísticos resumen
+summary(base$valor_arancel)
+```
+
+
+```{r}
+# Histograma
+ggplot(base, aes(x = valor_arancel)) +
+  geom_histogram() +
+  scale_x_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ",")) + 
+  scale_y_continuous(labels = scales::label_comma(big.mark = ".", decimal.mark = ","))
+
+```
+
+
+```{r}
+# Transformaciones 
+base_f <- base %>% filter(valor_arancel != 0) # filtrar casos 0
+
+base_f <- base_f %>% 
+  mutate(region_sede_d = as_factor(if_else(region_sede == "Metropolitana", 1, 0)),
+         dur_estudio_carr_m = as_factor(dur_estudio_carr),
+         dur_estudio_carr_m = fct_other(dur_estudio_carr_m, 
+                                        drop = c(14, 16, 20, 24), 
+                                        other_level = "Más de 12 semestres"),
+         tipo_inst_1 = factor(tipo_inst_1),
+         tipo_inst_2 = factor(tipo_inst_2))
+
+
+
+```
 
 # 3. Proceso de selección del modelo
+
+## Backward 
+```{r}
+muestra_base_f <- sample_n(base_f, 500) %>% drop_na()
+
+modelo1 <- lm(log(valor_arancel) ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2 + dur_total_carr, data = muestra_base_f)
+drop1(modelo1, test = "F")
+drop1(update(modelo1, ~ . -dur_total_carr), test = "F")
+drop1(update(modelo1, ~ . -dur_total_carr - jornada), test = "F")
+modelo1 <- lm(log(valor_arancel) ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio  + tipo_inst_2 + nivel_carrera_2, data = muestra_base_f)
+
+```
+
+##foward 
+
+```{r}
+modelo_nulo <- lm(log(valor_arancel)~ 1, data = muestra_base_f)
+add1(modelo_nulo, scope = ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2 + dur_total_carr, test = "F")
+add1(update(modelo_nulo ~ . +dur_estudio_carr_m), scope = ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2 + dur_total_carr, test = "F")
+
+```
+
+
 
 
 
