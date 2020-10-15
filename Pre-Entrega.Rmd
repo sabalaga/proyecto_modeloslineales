@@ -1,6 +1,23 @@
 ---
 title: "Pre-Entrega Proyecto Modelos Lineales"
-output: pdf_document
+subtitle: "Arancel universidades chilenas"
+author: "Felipe López | Camila Straub B."
+date: "14 de octubre de 2020"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 1
+toc-title: "Índice"
+header-includes:
+- \usepackage{titling}
+- \pretitle{\LARGE\includegraphics[width=5cm]{logo_uc.png}\\[\bigskipamount]\begin{center}}
+- \posttitle{\end{center}}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhf{}
+- \fancyhead[lh]{Pre-Entrega Proyecto}
+- \fancyfoot[lf]{Modelos Lineales (EPG3318) - Segundo Semestre 2020}
+- \fancyfoot[rf]{\thepage}
 ---
 
 # 1. Descripción del problema
@@ -19,41 +36,95 @@ Algunas de las variables consideradas para el modelo son:
 
 * Clasificación según categoría de institución que distingue Universidades del Consejo de Rectores y Universidades Privadas que no son del CRUCH (`TIPO_INST_2`)
 * Región donde se ubica la sede en la cual se imparte la carrera (`REGIÓN_SEDE`)
-* Categorización área OECD de la carrera o programa (OECD_AREA)
-* Número de años por la que fue acreditada la institución (ACRE_INST_ANIO)
-* Jornada en que se imparte la carrera o programa (JORNADA)
-* Clasificación del nivel al que pertenecen los estudios de la carrera o programa: Carreras Técnicas, Carreras Profesionales, Postítulo, Magíster, Doctorado. (NIVEL_CARRERA_2)
-* Duración teórica o formal en semestres de la carrera o programa, desde el momento en que un estudiante ingresa al primer año de la carrera hasta que obtiene el título o grado terminal de la misma (DUR_TOTAL_CARRERA)
+* Categorización área OECD de la carrera o programa (`OECD_AREA`)
+* Número de años por la que fue acreditada la institución (`ACRE_INST_ANIO`)
+* Jornada en que se imparte la carrera o programa (`JORNADA`)
+* Clasificación del nivel al que pertenecen los estudios de la carrera o programa: Carreras Técnicas, Carreras Profesionales, Postítulo, Magíster, Doctorado. (`NIVEL_CARRERA_2`)
+* Duración teórica o formal en semestres de la carrera o programa, desde el momento en que un estudiante ingresa al primer año de la carrera hasta que obtiene el título o grado terminal de la misma (`DUR_TOTAL_CARRERA`)
 
 # 2. Análisis descriptivo de los datos
 
+```{r setup, include = FALSE}
 
-```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
 library(tidyverse)
-#base <- read.csv("C:/matricula_2019.csv", sep = ";" )
+
+#base <- read_delim("20200706_Matrícula_Ed_Superior_2019_PUBL_MRUN.csv", 
+#                   ";", escape_double = FALSE, trim_ws = TRUE)
+
 #saveRDS(base, "matricula_2019.rds")
+
 #zip(zipfile = 'matricula_2019Zip', files = 'matricula_2019.rds')
+
 base <- readRDS("matricula_2019.rds")
+
 ```
+
+Como se mencionó en el apartado anterior se agrupó la base según programa de estudios y se mantuvieron solo las variables que hicieran relación al programa y no al estudiante. Se creo una variable que contiene el número de estudiantes matriculados en cada programa.
+
+```{r}
+
+# glimpse(base)
+
+base_f <- base %>% 
+  group_by(codigo_unico) %>% 
+  summarise(tipo_inst_1 = first(tipo_inst_1),
+            tipo_inst_2 = first(tipo_inst_2),
+            tipo_inst_3 = first(tipo_inst_3),
+            cod_inst = first(cod_inst),
+            nomb_inst = first(nomb_inst),
+            cod_sede = first(cod_sede),
+            nomb_sede = first(nomb_sede),
+            cod_carrera = first(cod_carrera),
+            nomb_carrera = first(nomb_carrera),
+            modalidad = first(modalidad),
+            jornada = first(jornada),
+            version = first(version),
+            tipo_plan_carr = first(tipo_plan_carr),
+            dur_estudio_carr = first(dur_estudio_carr),
+            dur_proceso_tit = first(dur_proceso_tit),
+            dur_total_carr = first(dur_total_carr),
+            region_sede = first(region_sede),
+            provincia_sede = first(provincia_sede),
+            comuna_sede = first(comuna_sede),
+            nivel_global = first(nivel_global),
+            nivel_carrera_1 = first(nivel_carrera_1),
+            nivel_carrera_2 = first(nivel_carrera_2),
+            requisito_ingreso = first(requisito_ingreso),
+            vigencia_carrera = first(vigencia_carrera),
+            valor_matricula = first(valor_matricula),
+            valor_arancel = first(valor_arancel),
+            codigo_demre = first(codigo_demre),
+            area_conocimiento = first(area_conocimiento),
+            oecd_area = first(oecd_area),
+            oecd_subarea = first(oecd_subarea),
+            area_carrera_generica = first(area_carrera_generica),
+            acreditada_carr = first(acreditada_carr),
+            acreditada_inst = first(acreditada_inst),
+            acre_inst_desde_hasta = first(acre_inst_desde_hasta),
+            acre_inst_anio  = first(acre_inst_anio ),
+            costo_proceso_titulacion = first(costo_proceso_titulacion),
+            costo_obtencion_titulo_diploma = first(costo_obtencion_titulo_diploma),
+            forma_ingreso = first(forma_ingreso),
+            n_estudiantes = n())
+
+```
+
+Distibución variables de interés:
+
 ```{r}
 # Estadísticos resumen
-summary(base$valor_arancel)
+summary(base_f$valor_arancel)
 ```
 
-
-```{r}
-# Histograma
-ggplot(base, aes(x = valor_arancel)) +
-  geom_histogram() +
-  scale_x_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ",")) + 
-  scale_y_continuous(labels = scales::label_comma(big.mark = ".", decimal.mark = ","))
-
-```
-
+Se eliminaron los casos donde el valor del arancel era igual a 0 o mayor a $10.000.000 anuales.
+También se recodificó la variable región y duración estudio de la carrera.
 
 ```{r}
 # Transformaciones 
-base_f <- base %>% filter(valor_arancel != 0) # filtrar casos 0
+base_f <- base_f %>% filter(valor_arancel != 0, # filtrar casos = 0
+                            valor_arancel <= 10000000) # filtrar casos > 10MM
 
 base_f <- base_f %>% 
   mutate(region_sede_d = as_factor(if_else(region_sede == "Metropolitana", 1, 0)),
@@ -64,34 +135,149 @@ base_f <- base_f %>%
          tipo_inst_1 = factor(tipo_inst_1),
          tipo_inst_2 = factor(tipo_inst_2))
 
+```
+
+En el Gráfico 1, se puede observar cómo se distribuye el valor del arancel.
+
+```{r}
+# Histograma
+ggplot(base_f, aes(x = valor_arancel)) +
+  geom_histogram(fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
+  scale_x_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ",")) + 
+  scale_y_continuous(labels = scales::label_comma(big.mark = ".", decimal.mark = ",")) +
+  labs(title = "Gráfico 1: Distribución variable valor arancel",
+       x = "Valor arancel",
+       y = "Número de casos")
+
+#ggplot(base_f, aes(x = log(valor_arancel))) +
+#  geom_histogram(fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
+#  scale_y_continuous(labels = scales::label_comma(big.mark = ".", decimal.mark = ",")) +
+#  labs(title = "Distribución variable valor arancel - Logaritmo",
+#       x = "Valor arancel",
+#       y = "Número de casos")
+
+```
+
+A continuación se muestra la relaicón entre el valor del arancel y algunas variables que podrían potencialmente ser predictoras.
+
+En el Gráfico 2 se observa cómo se distibuye el arancel según si la sede está ubicada en la región metropolitana (1) u en otra región (0).
+
+```{r}
+
+ggplot(base_f, aes(x = region_sede_d, y = valor_arancel, fill= region_sede_d)) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 2: Arancel según región",
+       x = "Región",
+       y = "Valor arancel") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
+  
+
+```
+
+En el Gráfico 3 se observa la relación con la duración de la carrera.
+
+```{r}
+
+ggplot(base_f, aes(x = dur_estudio_carr_m, y = valor_arancel, fill= dur_estudio_carr_m)) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 3: Arancel según duración carrera",
+       x = "Semestres",
+       y = "Valor arancel") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
+  
+
+```
+
+```{r}
+
+ggplot(base_f, aes(x = tipo_inst_2, y = valor_arancel, fill= tipo_inst_2)) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 4: Arancel según tipo de institución",
+       x = "Tipo de institución",
+       y = "Valor arancel") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ",")) +
+  theme(axis.text.x = element_text(angle = 40))
+
+```
+
+```{r}
+
+ggplot(base_f, aes(x = oecd_area, y = valor_arancel, fill= oecd_area)) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 5: Arancel según área",
+       x = "Área",
+       y = "Valor arancel") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ",")) +
+  coord_flip()
+
+```
+
+```{r}
+
+ggplot(base_f, aes(x = as.factor(acre_inst_anio), y = valor_arancel, fill = as.factor(acre_inst_anio))) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 6: Arancel según años de acreditación",
+       x = "Tipo de institución",
+       y = "Años de acreditación") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
+
+```
+
+```{r}
+
+ggplot(base_f, aes(x = jornada, y = valor_arancel, fill = jornada)) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 7: Arancel según jornada",
+       x = "Jornada",
+       y = "Valor arancel") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
+
 
 
 ```
+
+```{r}
+
+ggplot(base_f, aes(x = nivel_carrera_2, y = valor_arancel, fill = nivel_carrera_2)) +
+  geom_boxplot() + 
+  labs(title = "Gráfico 8: Arancel según nivel carrera",
+       x = "Jornada",
+       y = "Valor arancel") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
+
+```
+
 
 # 3. Proceso de selección del modelo
 
 ## Backward 
 ```{r}
+
 muestra_base_f <- sample_n(base_f, 500) %>% drop_na()
 
-modelo1 <- lm(log(valor_arancel) ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2 + dur_total_carr, data = muestra_base_f)
+modelo1 <- lm(log(valor_arancel) ~ region_sede_d + dur_estudio_carr_m + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2, data = muestra_base_f)
 drop1(modelo1, test = "F")
 drop1(update(modelo1, ~ . -dur_total_carr), test = "F")
 drop1(update(modelo1, ~ . -dur_total_carr - jornada), test = "F")
 modelo1 <- lm(log(valor_arancel) ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio  + tipo_inst_2 + nivel_carrera_2, data = muestra_base_f)
 
-```
-
-##foward 
-
-```{r}
-modelo_nulo <- lm(log(valor_arancel)~ 1, data = muestra_base_f)
-add1(modelo_nulo, scope = ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2 + dur_total_carr, test = "F")
-add1(update(modelo_nulo ~ . +dur_estudio_carr_m), scope = ~ region_sede_d + dur_estudio_carr_m + tipo_inst_1 + oecd_area + acre_inst_anio +  jornada + tipo_inst_2 + nivel_carrera_2 + dur_total_carr, test = "F")
+summary(modelo1)
 
 ```
 
 
+# Referencias
 
+Cancino, R. (2010). El Modelo Neoliberal y la Educación Universitaria en Latinoamérica. El caso de la universidad chilena. Sociedad y discurso, AAU, (18), 152-167. http://www.discurso.aau.dk/index_16.htm
 
+Mena, Paula & Dooner, Cecilia. (2006). Arancel de referencia v/s arancel real: diagnóstico e interrogantes iniciales. Calidad en la educación, ISSN 0717-4004, Nº. 24, 2006 (Ejemplar dedicado a: La gestión de las instituciones de educación superior), pags. 285-318. 24. 10.31619/caledu.n24.280. 
+
+Salas Opazo, V. & Gómez, E. (2014). "Efectos de los Aranceles de Referencia en las Universidades Chilenas," Investigaciones de Economía de la Educación volume 9, in: Adela García Aracil & Isabel Neira Gómez (ed.), Investigaciones de Economía de la Educación 9, edition 1, volume 9, chapter 13, pages 277-292, Asociación de Economía de la Educación.
 
