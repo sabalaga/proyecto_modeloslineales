@@ -1,4 +1,4 @@
-## ----setup, include = FALSE----------------------------------------------------------------------------------------------------------------------------------
+## ----setup, include = FALSE--------------------------------------------------------------
 
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
@@ -15,7 +15,7 @@ base <- readRDS("matricula_2019.rds")
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE-----------------------------------------------------------------------
 
 # glimpse(base)
 
@@ -63,12 +63,12 @@ base_f <- base %>%
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------
 # Estadísticos resumen
 summary(base_f$valor_arancel)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----echo=FALSE--------------------------------------------------------------------------
 # Transformaciones 
 base_f <- base_f %>% filter(valor_arancel != 0, # filtrar casos = 0
                             valor_arancel <= 10000000) # filtrar casos > 10MM
@@ -84,7 +84,7 @@ base_f <- base_f %>%
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----  echo = FALSE, fig.align="center",out.width = "40%"--------------------------------
 # Histograma
 ggplot(base_f, aes(x = valor_arancel)) +
   geom_histogram(fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
@@ -103,7 +103,7 @@ ggplot(base_f, aes(x = valor_arancel)) +
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE, fig.align="center",out.width = "40%"---------------------------------
 
 ggplot(base_f, aes(x = region_sede_d, y = valor_arancel, fill= region_sede_d)) +
   geom_boxplot() + 
@@ -116,7 +116,7 @@ ggplot(base_f, aes(x = region_sede_d, y = valor_arancel, fill= region_sede_d)) +
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------
 
 ggplot(base_f, aes(x = dur_estudio_carr_m, y = valor_arancel, fill= dur_estudio_carr_m)) +
   geom_boxplot() + 
@@ -129,7 +129,7 @@ ggplot(base_f, aes(x = dur_estudio_carr_m, y = valor_arancel, fill= dur_estudio_
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE, fig.align="center",out.width = "40%"---------------------------------
 
 ggplot(base_f, aes(x = tipo_inst_2, y = valor_arancel, fill= tipo_inst_2)) +
   geom_boxplot() + 
@@ -142,7 +142,7 @@ ggplot(base_f, aes(x = tipo_inst_2, y = valor_arancel, fill= tipo_inst_2)) +
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE, fig.align="center",out.width = "40%"---------------------------------
 
 ggplot(base_f, aes(x = oecd_area, y = valor_arancel, fill= oecd_area)) +
   geom_boxplot() + 
@@ -155,19 +155,19 @@ ggplot(base_f, aes(x = oecd_area, y = valor_arancel, fill= oecd_area)) +
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE, fig.align="center",out.width = "40%"---------------------------------
 
 ggplot(base_f, aes(x = as.factor(acre_inst_anio), y = valor_arancel, fill = as.factor(acre_inst_anio))) +
   geom_boxplot() + 
   labs(title = "Gráfico 6: Arancel según años de acreditación",
-       x = "Tipo de institución",
-       y = "Años de acreditación") +
+       x = "Años de acreditación",
+       y = "Valor arancel") +
   theme(legend.position = "none") +
   scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE, fig.align="center",out.width = "40%"---------------------------------
 
 ggplot(base_f, aes(x = jornada, y = valor_arancel, fill = jornada)) +
   geom_boxplot() + 
@@ -181,7 +181,7 @@ ggplot(base_f, aes(x = jornada, y = valor_arancel, fill = jornada)) +
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ---- echo = FALSE, fig.align="center",out.width = "40%"---------------------------------
 
 ggplot(base_f, aes(x = nivel_carrera_2, y = valor_arancel, fill = nivel_carrera_2)) +
   geom_boxplot() + 
@@ -193,7 +193,7 @@ ggplot(base_f, aes(x = nivel_carrera_2, y = valor_arancel, fill = nivel_carrera_
 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----------------------------------------------------------------------------------------
 
 muestra_base_f <- sample_n(base_f, 500) %>% drop_na()
 
