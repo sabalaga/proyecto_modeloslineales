@@ -10,7 +10,7 @@ output:
 toc-title: "Índice"
 header-includes:
 - \usepackage{titling}
-- \pretitle{\LARGE\includegraphics[width=5cm]{logo_uc.png}\\[\bigskipamount]\begin{center}}
+- \pretitle{\LARGE\includegraphics[width=5cm]{logo_uc.jpeg}\\[\bigskipamount]\begin{center}}
 - \posttitle{\end{center}}
 - \usepackage{fancyhdr}
 - \pagestyle{fancy}
@@ -24,9 +24,9 @@ header-includes:
 
 La educación superior en Chile tiene una organización compleja y que ha sufrido múltiples reformas desde la década de los ochenta hasta la actualidad. Probablemente el cambio más importante sea la gratuidad, que se comenzó a implementar desde el 2016. 
 
-Una de las aristas desde la que se puede estudiar a las Instituciones de Educación Superior (IES) y el acceso a éstas son los aranceles asociados a estudiar. Las universidades chileneas cobran los aranceles que estiman convenientes por las carreras de pregrado y pueden usar cualquier criterio que les parezca. Cada institución fija, año tras año, y autónomamente el precio que debe pagar el estudiante (Salas & Gómez, 2013; Dooner & Mena, 2006). Según la OCDE, Chile se encuentra en la segunda categoría entre las naciones con mayores aranceles. Sin embargo, basándose en rankings internacionales, Chile no está en el mismo nivel que el resto de los países que pertenecen a esta categoría en cuanto a calidad de la educación impartida (Cancino, 2010). Existe una amplia variación de los aranceles entre las univerisdades y también dentro de cada una, en los precios de los distintos porgramas que ofrecen.
+Una de las aristas desde la que se puede estudiar a las Instituciones de Educación Superior (IES) y el acceso a éstas son los aranceles asociados a estudiar. Las universidades chilenas cobran los aranceles que estiman convenientes por las carreras de pregrado y pueden usar cualquier criterio que les parezca. Cada institución fija, año tras año, y autónomamente el precio que debe pagar el estudiante (Salas & Gómez, 2013; Dooner & Mena, 2006). Según la OCDE, Chile se encuentra en la segunda categoría entre las naciones con mayores aranceles. Sin embargo, basándose en rankings internacionales, Chile no está en el mismo nivel que el resto de los países que pertenecen a esta categoría en cuanto a calidad de la educación impartida (Cancino, 2010). Existe una amplia variación de los aranceles entre las universidades y también dentro de cada una, en los precios de los distintos porgramas que ofrecen.
 
-La presente investigción busca indagar en qué factores -y en qué medida - inciden en los precios de los aranceles. Para esto se utiliza información sobre la matrícula de educación superior por estudiante. Esta información es de carácter público y se encuentra disponible la base de datos y el correspondiente esquema de registro a través del Centro de Estudios MINEDUC, en [este enlace](http://datos.mineduc.cl/dashboards/20195/descarga-bases-de-datos-matricula-en-educacion-superior/).
+La presente investigación busca indagar en qué factores -y en qué medida - inciden en los precios de los aranceles. Para esto se utiliza información sobre la matrícula de educación superior por estudiante. Esta información es de carácter público y se encuentra disponible la base de datos y el correspondiente esquema de registro a través del Centro de Estudios MINEDUC, en [este enlace](http://datos.mineduc.cl/dashboards/20195/descarga-bases-de-datos-matricula-en-educacion-superior/).
 
 La base de datos correspondiente al año 2019 contiene 1.268.504 registros y 48 variables que corresponden a los estudiantes que se matricularon en IES ese año. Sin embargo, como la unidad de análisis que interesa son los programas, al agrupar por esta variable se tiene que la base cuenta con información de 14.546 programas, donde cada uno tiene entre uno y 4.873 estudiantes.
 
@@ -63,7 +63,7 @@ base <- readRDS("matricula_2019.rds")
 
 Como se mencionó en el apartado anterior se agrupó la base según programa de estudios y se mantuvieron solo las variables que hicieran relación al programa y no al estudiante. Se creo una variable que contiene el número de estudiantes matriculados en cada programa.
 
-```{r}
+```{r, echo = FALSE}
 
 # glimpse(base)
 
@@ -121,7 +121,7 @@ summary(base_f$valor_arancel)
 Se eliminaron los casos donde el valor del arancel era igual a 0 o mayor a $10.000.000 anuales.
 También se recodificó la variable región y duración estudio de la carrera.
 
-```{r}
+```{r,echo=FALSE}
 # Transformaciones 
 base_f <- base_f %>% filter(valor_arancel != 0, # filtrar casos = 0
                             valor_arancel <= 10000000) # filtrar casos > 10MM
@@ -139,7 +139,7 @@ base_f <- base_f %>%
 
 En el Gráfico 1, se puede observar cómo se distribuye el valor del arancel.
 
-```{r}
+```{r,  echo = FALSE, fig.align="center",out.width = "40%"}
 # Histograma
 ggplot(base_f, aes(x = valor_arancel)) +
   geom_histogram(fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
@@ -162,7 +162,7 @@ A continuación se muestra la relaicón entre el valor del arancel y algunas var
 
 En el Gráfico 2 se observa cómo se distibuye el arancel según si la sede está ubicada en la región metropolitana (1) u en otra región (0).
 
-```{r}
+```{r, echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = region_sede_d, y = valor_arancel, fill= region_sede_d)) +
   geom_boxplot() + 
@@ -177,7 +177,7 @@ ggplot(base_f, aes(x = region_sede_d, y = valor_arancel, fill= region_sede_d)) +
 
 En el Gráfico 3 se observa la relación con la duración de la carrera.
 
-```{r}
+```{r,  echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = dur_estudio_carr_m, y = valor_arancel, fill= dur_estudio_carr_m)) +
   geom_boxplot() + 
@@ -190,7 +190,7 @@ ggplot(base_f, aes(x = dur_estudio_carr_m, y = valor_arancel, fill= dur_estudio_
 
 ```
 
-```{r}
+```{r, echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = tipo_inst_2, y = valor_arancel, fill= tipo_inst_2)) +
   geom_boxplot() + 
@@ -203,7 +203,7 @@ ggplot(base_f, aes(x = tipo_inst_2, y = valor_arancel, fill= tipo_inst_2)) +
 
 ```
 
-```{r}
+```{r, echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = oecd_area, y = valor_arancel, fill= oecd_area)) +
   geom_boxplot() + 
@@ -216,19 +216,19 @@ ggplot(base_f, aes(x = oecd_area, y = valor_arancel, fill= oecd_area)) +
 
 ```
 
-```{r}
+```{r, echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = as.factor(acre_inst_anio), y = valor_arancel, fill = as.factor(acre_inst_anio))) +
   geom_boxplot() + 
   labs(title = "Gráfico 6: Arancel según años de acreditación",
-       x = "Tipo de institución",
-       y = "Años de acreditación") +
+       x = "Años de acreditación",
+       y = "Valor arancel") +
   theme(legend.position = "none") +
   scale_y_continuous(labels = scales::label_dollar(big.mark = ".", decimal.mark = ","))
 
 ```
 
-```{r}
+```{r, echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = jornada, y = valor_arancel, fill = jornada)) +
   geom_boxplot() + 
@@ -242,7 +242,7 @@ ggplot(base_f, aes(x = jornada, y = valor_arancel, fill = jornada)) +
 
 ```
 
-```{r}
+```{r, echo = FALSE, fig.align="center",out.width = "40%"}
 
 ggplot(base_f, aes(x = nivel_carrera_2, y = valor_arancel, fill = nivel_carrera_2)) +
   geom_boxplot() + 
